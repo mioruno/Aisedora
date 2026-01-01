@@ -4,6 +4,10 @@
 
 Unlike standard system tools, Aisedora utilizes the **WinDivert** driver to intercept and analyze network traffic in real-time, providing byte-perfect accuracy for both Sent/Received data and packet counts.
 
+<p align="center">
+  <img src="assets/preview.png" alt="Aisedora Interface" width="100%">
+</p>
+
 ---
 
 ## ✨ Key Features
