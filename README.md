@@ -76,6 +76,3 @@ Aisedora is built on a robust stack:
 ## ⚠️ Disclaimer
 
 This tool interacts with the Windows Network Stack at a low level. While safe, it is intended for educational and diagnostic purposes. Always ensure you have permission to monitor network traffic on the machine you are using.
-
----
-*Built with ❤️ by Antigravity*
