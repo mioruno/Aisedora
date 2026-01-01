@@ -1,0 +1,12 @@
+build/
+*.etl
+*.exe
+*.dll
+*.lib
+*.pdb
+*.obj
+*.log
+.vs/
+out/
+x64/
+*.zip
