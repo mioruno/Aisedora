@@ -10,3 +10,5 @@ build/
 out/
 x64/
 *.zip
+imgui.ini
+npcap-sdk/

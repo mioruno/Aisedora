@@ -32,38 +32,43 @@ Unlike standard system tools, Aisedora utilizes the **WinDivert** driver to inte
 
 ---
 
-## 🛠️ How to Build
+## 🚀 Quick Start (Recommended)
 
-Aisedora uses a modern CMake workflow. You do not need to manually install ANY libraries.
+The easiest way to build and run Aisedora is using the included automation script. This script handles directory creation, CMake configuration, building, and running with admin privileges.
 
 1.  **Clone the repository**:
     ```powershell
     git clone https://github.com/yourusername/Aisedora.git
     cd Aisedora
     ```
+2.  **Run the script**:
+    *   Right-click **`run.bat`** and select **"Run as Administrator"**.
+    *   *Or run it from an Admin terminal: `.\run.bat`*
 
-2.  **Generate Project**:
+The script will automatically compile the project and launch the application.
+
+---
+
+## 🛠️ Manual Build (Advanced)
+
+If you prefer to build manually via CMake:
+
+1.  **Generate Project**:
     ```powershell
     mkdir build
     cd build
     cmake ..
     ```
 
-3.  **Compile**:
+2.  **Compile**:
     ```powershell
     cmake --build . --config Release
     ```
-    *The build process will automatically fetch the WinDivert driver and placing the required `.sys` and `.dll` files next to the executable.*
+    *The build process will automatically fetch the WinDivert driver and place the required `.sys` and `.dll` files next to the executable.*
 
----
-
-## 🚀 How to Run
-
-1.  Navigate to the output directory (usually `build/bin/Release`).
-2.  Right-click **`Aisedora.exe`**.
-3.  Select **"Run as Administrator"**.
-
-> **Note**: If you do not run as Admin, the application will fail to initialize the monitoring engine as it cannot access the network stack.
+3.  **Run**:
+    *   Navigate to `build/bin/Release`
+    *   Run `TCPView.exe` as **Administrator**.
 
 ---
 
