@@ -2,7 +2,7 @@
 cd /d "%~dp0"
 
 echo ====================================
-echo  TCPView with WinDivert (FIXED)
+echo  TCPView with WinDivert (FAST MODE)
 echo ====================================
 echo.
 
@@ -19,60 +19,70 @@ REM Stop any running instance
 taskkill /F /IM TCPView.exe 2>nul
 echo.
 
-REM --- SMART BUILD SYSTEM ---
+REM --- FAST BUILD SYSTEM ---
 if not exist build (
-    echo [i] Creating build directory...
+    echo [i] Build directory not found. Creating...
     mkdir build
+    set RECONFIG=1
+) else (
+    if not exist build\CMakeCache.txt (
+         set RECONFIG=1
+    ) else (
+         set RECONFIG=0
+    )
 )
+
 cd build
 
-echo [i] Checking project configuration (CMake)...
-REM Using CALL to ensure control returns to this script
-call cmake .. -DCMAKE_BUILD_TYPE=Release
+if %RECONFIG%==1 (
+    echo [i] First time setup / Reconfiguration...
+    call cmake .. -DCMAKE_BUILD_TYPE=Release
+    if %errorlevel% neq 0 goto :config_failed
+)
+
+echo [i] Building...
+REM Try to build directly. If it fails, we assume config is broken and retry hard.
+call cmake --build . --config Release --target TCPView -j %NUMBER_OF_PROCESSORS%
 
 if %errorlevel% neq 0 (
-    echo.
-    echo [!] Configuration mismatch or error detected.
-    echo [i] Cleaning up and re-initializing...
-    cd ..
-    rmdir /s /q build
-    mkdir build
-    cd build
-    
-    echo [i] Configuring project from scratch...
-    call cmake .. -DCMAKE_BUILD_TYPE=Release
-    if %errorlevel% neq 0 (
-        echo [!] Fatal: CMake Configuration Failed!
-        pause
-        exit /b 1
-    )
+     echo.
+     echo [!] Build failed. Assuming stale configuration.
+     echo [i] Cleaning and retrying from scratch...
+     
+     cd ..
+     rmdir /s /q build
+     mkdir build
+     cd build
+     
+     call cmake .. -DCMAKE_BUILD_TYPE=Release
+     if %errorlevel% neq 0 goto :config_failed
+     
+     call cmake --build . --config Release --target TCPView -j %NUMBER_OF_PROCESSORS%
+     if %errorlevel% neq 0 goto :build_failed
 )
 
 echo.
-echo [DEBUG] Configuration finished. Moving to build step...
-REM Force pause here to ensure user sees the success above
-timeout /t 2 >nul
-
-echo [i] Building...
-call cmake --build . --config Release --target TCPView -j %NUMBER_OF_PROCESSORS%
-
-if %errorlevel% equ 0 (
-    echo.
-    echo [OK] Build Successful! 
-    echo [i] Launching TCPView...
-    echo.
-    if exist "bin\Release\TCPView.exe" (
-        .\bin\Release\TCPView.exe
-    ) else (
-        echo [!] Critical Error: executable not found in bin\Release\TCPView.exe
-        pause
-    )
+echo [OK] Launching...
+echo.
+if exist "bin\Release\TCPView.exe" (
+    .\bin\Release\TCPView.exe
 ) else (
-    echo.
-    echo [!] ERROR: Build failed!
+    echo [!] Critical Error: executable not found!
     pause
 )
 
-echo.
-echo [i] Script finished.
+goto :end
+
+:config_failed
+echo [!] CMake Configuration Failed!
 pause
+goto :end
+
+:build_failed
+echo [!] Build Failed even after full reconfiguration!
+pause
+goto :end
+
+:end
+REM Optional: pause only if you want to see the output every time.
+REM pause
